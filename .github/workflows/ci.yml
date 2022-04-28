@@ -1,44 +1,37 @@
-name: ci
-
-on:
+name: Deploy # Workflow 이름
+on: # Event 감지
   push:
     branches:
-      - main
-      - master
-  pull_request:
-    branches:
-      - main
-      - master
-
-jobs:
-  ci:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [14]
-
+      - main # 마스터 브랜치의 푸쉬가 일어날 때 CI/CD를 진행하겠다는 뜻
+jobs: # Job 설정
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎
-        uses: actions/checkout@master
-
-      - name: Setup node env 🏗
-        uses: actions/setup-node@v2.1.5
+      - name: Checkout source code. # Repo checkout
+        uses: actions/checkout@v2
+      - name: Check Node v # Node v 확인
+        run: node -v
+      - name: Install Dependencies # 의존 파일 설치
+        run: npm install --frozen-lockfile
+      - name: Build # Vue Build
+        run: npm run generate && npm run build
+      - name: zip create
+        run: zip -qq -r ./build-fe.zip .
+        shell: bash
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          node-version: ${{ matrix.node }}
-          check-latest: true
-
-      - name: Cache node_modules 📦
-        uses: actions/cache@v2.1.4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies 👨🏻‍💻
-        run: npm ci --prefer-offline --no-audit
-
-      - name: Run linter 👀
-        run: npm run lint
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Upload to S3 # Upload build file to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: aws s3 cp --region ${{ secrets.AWS_REGION }} ./build-fe.zip s3://playground-static/static/build-fe.zip
+      - name: Deploy # Deploy to EC2
+        run: aws deploy create-deployment
+          --application-name playground-web-app
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name playground-web-app
+          --s3-location bucket=playground-web-bucket,key=static/build-fe.zip,bundleType=zip
