@@ -3,7 +3,7 @@ export default {
   head: {
     title: 'playground-web',
     htmlAttrs: {
-      lang: 'en',
+      lang: 'ko',
     },
     meta: [
       { charset: 'utf-8' },
@@ -15,7 +15,7 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  // css: ['@/assets/scss/index.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -27,7 +27,12 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
+    '@nuxtjs/style-resources'
   ],
+
+  styleResources: {
+    scss: '@/assets/scss/index.scss'
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [

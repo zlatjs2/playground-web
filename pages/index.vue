@@ -7,3 +7,9 @@ export default {
   name: 'IndexPage',
 }
 </script>
+
+<style lang="scss">
+body {
+  color: $common-black;
+}
+</style>
