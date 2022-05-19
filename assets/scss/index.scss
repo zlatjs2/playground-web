@@ -1,2 +1,4 @@
-$common-white: #fff;
-$common-black: #000;
+@import 'colors';
+@import 'reset';
+@import 'common';
+@import 'typorgraphy';

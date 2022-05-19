@@ -1,0 +1,86 @@
+/// font palette
+$fonts: (
+  title1: (
+    font-weight: normal,
+    font-size: 24px,
+    line-height: 40px,
+  ),
+  title2: (
+    font-weight: normal,
+    font-size: 16px,
+    line-height: 32px,
+  ),
+  subtitle1: (
+    font-weight: bold,
+    font-size: 14px,
+    line-height: 24px,
+  ),
+  subtitle2: (
+    font-weight: bold,
+    font-size: 12px,
+    line-height: 24px,
+  ),
+  body1: (
+    font-weight: normal,
+    font-size: 14px,
+    line-height: 24px,
+  ),
+  body2: (
+    font-weight: normal,
+    font-size: 12px,
+    line-height: 24px,
+  ),
+  caption: (
+    font-weight: normal,
+    font-size: 10px,
+    line-height: 16px,
+  ),
+);
+
+/// font mixin
+/// @param  {String}    $name                           font name
+/// @param  {String}    $option                         normal or bold
+/// @prop   {Bool}      $has-name (false)               $fonts map의 key에 일치하는 $name이 있는지 유/무
+/// @prop   {Map}       $css-map                        $name에 일치하는 css-map
+/// @example
+/// @include font(title1);
+/// @include font(body2, bold);
+@mixin font($name, $option: 0) {
+  $css-map: map-deep-get($fonts, $name);
+  @if $option == bold {
+    $css-map: map-merge(
+      $css-map,
+      (
+        font-weight: bold,
+      )
+    );
+  }
+  @if $option == normal {
+    $css-map: map-merge(
+      $css-map,
+      (
+        font-weight: normal,
+      )
+    );
+  }
+
+  /// output
+  @each $key, $value in $css-map {
+    #{$key}: $value;
+  }
+}
+
+.title010 {
+  font-weight: normal;
+  font-size: 24px;
+  line-height: 40px;
+}
+.subtitle010 {
+}
+.body010 {
+}
+.body020 {
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 24px;
+}
