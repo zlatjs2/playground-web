@@ -8,6 +8,7 @@
     :placeholder="placeholder"
     :maxlength="maxlength + 1"
     :readonly="isReadonly"
+    :disabled="isDisabled"
     @input="$emit('input', $event.target.value)"
   />
 </template>
