@@ -1,39 +1,32 @@
 /// font palette
 $fonts: (
   title1: (
-    font-weight: normal,
-    font-size: 24px,
-    line-height: 40px,
+    font-size: 1.5rem,
+    line-height: 1.34,
   ),
   title2: (
-    font-weight: normal,
-    font-size: 16px,
-    line-height: 32px,
+    font-size: 1.25rem,
+    line-height: 1.6,
   ),
   subtitle1: (
-    font-weight: bold,
-    font-size: 14px,
-    line-height: 24px,
+    font-size: 1rem,
+    line-height: 1.75,
   ),
   subtitle2: (
-    font-weight: bold,
-    font-size: 12px,
-    line-height: 24px,
+    font-size: 0.875rem,
+    line-height: 1.57,
   ),
   body1: (
-    font-weight: normal,
-    font-size: 14px,
-    line-height: 24px,
+    font-size: 1rem,
+    line-height: 1.5,
   ),
   body2: (
-    font-weight: normal,
-    font-size: 12px,
-    line-height: 24px,
+    font-size: 0.875rem,
+    line-height: 1.43,
   ),
   caption: (
-    font-weight: normal,
-    font-size: 10px,
-    line-height: 16px,
+    font-size: 0.75rem,
+    line-height: 1.66,
   ),
 );
 
@@ -46,7 +39,8 @@ $fonts: (
 /// @include font(title1);
 /// @include font(body2, bold);
 @mixin font($name, $option: 0) {
-  $css-map: map-deep-get($fonts, $name);
+  $css-map: map-get($fonts, $name);
+
   @if $option == bold {
     $css-map: map-merge(
       $css-map,
@@ -79,8 +73,19 @@ $fonts: (
 }
 .body010 {
 }
-.body020 {
-  font-weight: normal;
-  font-size: 12px;
-  line-height: 24px;
+
+.text-primary {
+  color: $text-primary;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-disabled {
+  color: $text-disabled;
+}
+
+.text-error {
+  color: $text-error;
 }

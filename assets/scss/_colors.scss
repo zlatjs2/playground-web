@@ -1,2 +1,52 @@
 $common-white: #fff;
 $common-black: #000;
+
+$primary-main: #1976d2;
+$primary-light: #42a5f5;
+$primary-dark: #1565c0;
+
+$secondary-main: #9c27b0;
+$secondary-light: #9c27b0;
+$secondary-dark: #9c27b0;
+
+$info-main: #0288d1;
+$info-light: #03a9f4;
+$info-dark: #01579b;
+
+$success-main: #2e7d32;
+$success-light: #4caf50;
+$success-dark: #1b5e20;
+
+$error-main: #d32f2f;
+$error-light: #ef5350;
+$error-dark: #c62828;
+
+$warning-main: #ed6c02;
+$warning-light: #ff9800;
+$warning-dark: #e65100;
+
+$grey005: #fafafa;
+$grey010: #f5f5f5;
+$grey020: #eeeeee;
+$grey030: #e0e0e0;
+$grey040: #bdbdbd;
+$grey050: #9e9e9e;
+$grey060: #757575;
+$grey070: #616161;
+$grey080: #424242;
+$grey090: #212121;
+
+$text-primary: $grey090;
+$text-secondary: $grey070;
+$text-disabled: $grey010;
+$text-error: $error-main;
+
+$divider: $grey030;
+
+$spacing: 8px;
+
+$zIndexAppBar: 1000;
+$zIndexDrawer: 1001;
+$zIndexModal: 1002;
+$zIndexSnackBar: 1003;
+$zIndexTooltip: 1004;
