@@ -9,7 +9,7 @@ export default {
   name: 'BaseLabel',
   props: {
     forHtml: {
-      type: [String, Number],
+      type: String,
       required: true,
     },
   },

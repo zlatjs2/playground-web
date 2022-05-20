@@ -1,25 +1,40 @@
 <template>
   <div :class="['text-field-wrap', classes]">
-    <atoms-base-label v-if="label" :for-html="id">{{ label }}</atoms-base-label>
-    <div :class="[classes, 'text-field']">
+    <atoms-base-label v-if="label" :for-html="id">
+      {{ label }}
+      <atoms-base-typorgraphy
+        v-if="isRequired"
+        component="span"
+        variant="caption"
+        color="secondary"
+      >
+        필수
+      </atoms-base-typorgraphy>
+    </atoms-base-label>
+    <div class="text-field">
       <atoms-base-input
         :id="id"
+        :type="type"
+        :name="name"
+        :value="value"
+        :placeholder="placeholder"
+        :maxlength="maxlength + 1"
+        :readonly="isReadonly"
+        :disabled="isDisabled"
+        @input="onInput"
         v-model="text"
-        :maxlength="maxlength"
-        placeholder="ID"
-        @input="$emit('input', $event)"
       />
       <atoms-base-typorgraphy
         v-if="units === 'count'"
         component="span"
-        class="body020"
+        variant="caption"
       >
         {{ value.length }}/{{ maxlength }}
       </atoms-base-typorgraphy>
       <atoms-base-typorgraphy
         v-if="units.unit"
         component="span"
-        class="body020"
+        variant="caption"
       >
         {{ units.unit }}
       </atoms-base-typorgraphy>
@@ -27,9 +42,10 @@
     <atoms-base-typorgraphy
       v-if="isError"
       component="div"
-      class="text-error body020"
+      variant="body2"
+      class="error-message"
     >
-      에러 메세지
+      error message
     </atoms-base-typorgraphy>
   </div>
 </template>
@@ -39,12 +55,37 @@ export default {
   name: 'TextField',
   props: {
     id: [String, Number],
-    label: [String, Number],
+    type: {
+      type: [String, Number],
+      default: 'text',
+    },
+    name: [String, Number],
     value: {
       type: [String, Number],
       required: true,
     },
-    maxlength: [String, Number],
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    maxlength: Number,
+    isReadonly: {
+      type: Boolean,
+    },
+    isFullWidth: {
+      type: Boolean,
+    },
+    isDisabled: {
+      type: Boolean,
+    },
+    isRequired: {
+      type: Boolean,
+    },
+    isError: {
+      type: Boolean,
+    },
+    label: [String, Number],
+
     units: {
       type: String,
       default: 'none', // none, count, unit
@@ -53,14 +94,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    isError: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     return {
       text: '',
+      error: false,
     }
   },
   computed: {
@@ -69,16 +107,43 @@ export default {
 
       return [
         this.getterBottom && `${prefix}--getter-bottom`,
-        this.isError && `${prefix}--error`,
+        this.isDisabled && `${prefix}--disabled`,
+        (this.isError || this.error) && `${prefix}--error`,
       ]
     },
   },
-  methods: {},
+  methods: {
+    onInput(value) {
+      this.$emit('input', value)
+
+      if (value.length >= this.maxlength + 1) {
+        this.error = true
+      } else {
+        this.error = false
+      }
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 .text-field-wrap {
+  &--error {
+    .base-label,
+    .base-input,
+    .base-typorgraphy {
+      color: $error-main;
+    }
+    .text-field {
+      border-color: $error-main;
+    }
+  }
+  &--disabled {
+    .text-field {
+      border-color: $text-disabled;
+      background-color: $text-disabled;
+    }
+  }
   &--getter-bottom {
     margin-bottom: $spacing * 2;
   }
@@ -95,7 +160,7 @@ export default {
   border-radius: 4px;
   border: 1px solid #eaeaea;
 }
-.text-error {
+.base-typorgraphy {
   margin-top: 4px;
 }
 </style>

@@ -89,13 +89,13 @@ export default {
   }
 
   &--grey {
-    border-color: $grey070;
+    border-color: $grey060;
 
     &.base-button--outlined {
       color: $text-primary;
     }
     &.base-button--contained {
-      background-color: $grey070;
+      background-color: $grey060;
     }
   }
 
@@ -159,7 +159,15 @@ export default {
   }
 
   &:hover {
-    opacity: 0.8;
+    &.base-button--primary {
+      background-color: $primary-dark;
+    }
+    &.base-button--secondary {
+      background-color: $secondary-dark;
+    }
+    &.base-button--grey {
+      background-color: $grey070;
+    }
   }
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <input
+    :class="['base-input', classes]"
     :id="id"
-    class="base-input"
     :type="type"
     :name="name"
     :value="value"
     :placeholder="placeholder"
-    :maxlength="maxlength"
+    :maxlength="maxlength + 1"
     :readonly="isReadonly"
     @input="$emit('input', $event.target.value)"
   />
@@ -30,22 +30,28 @@ export default {
       type: String,
       default: '',
     },
-    maxlength: [String, Number],
+    maxlength: Number,
     isReadonly: {
       type: Boolean,
-      default: false,
     },
     isFullWidth: {
       type: Boolean,
-      default: false,
+    },
+    isDisabled: {
+      type: Boolean,
     },
   },
   data() {
     return {}
   },
   computed: {
-    readonly() {
-      return this.isReadonly
+    classes() {
+      const prefix = 'base-input'
+
+      return [
+        this.isDisabled && `${prefix}--disabled`,
+        // this.isError && `${prefix}--error`,
+      ]
     },
   },
 }
@@ -58,5 +64,12 @@ export default {
   border: 0 none;
   width: 100%;
   box-sizing: border-box;
+  background: none;
+  &:read-only,
+  &:disabled {
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
 }
 </style>
