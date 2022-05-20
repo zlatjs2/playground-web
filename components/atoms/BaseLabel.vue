@@ -1,9 +1,23 @@
 <template>
-  <label> 111 </label>
+  <label :for="forHtml" class="base-label">
+    <slot></slot>
+  </label>
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'BaseLabel',
+  props: {
+    forHtml: {
+      type: [String, Number],
+      required: true,
+    },
+  },
+}
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.base-label {
+  @include font('body2');
+}
+</style>
