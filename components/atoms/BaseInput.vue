@@ -1,5 +1,6 @@
 <template>
   <input
+    :id="id"
     class="base-input"
     :type="type"
     :name="name"
@@ -15,6 +16,7 @@
 export default {
   name: 'BaseInput',
   props: {
+    id: [String, Number],
     type: {
       type: [String, Number],
       default: 'text',
@@ -24,7 +26,10 @@ export default {
       type: [String, Number],
       required: true,
     },
-    placeholder: String,
+    placeholder: {
+      type: String,
+      default: '',
+    },
     maxlength: [String, Number],
     isReadonly: {
       type: Boolean,
