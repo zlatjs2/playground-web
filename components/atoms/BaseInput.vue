@@ -1,7 +1,7 @@
 <template>
   <input
-    :class="['base-input', classes]"
     :id="id"
+    :class="['base-input', classes]"
     :type="type"
     :name="name"
     :value="value"
@@ -17,14 +17,14 @@
 export default {
   name: 'BaseInput',
   props: {
-    id: [String, Number],
+    id: String,
     type: {
-      type: [String, Number],
+      type: String,
       default: 'text',
     },
-    name: [String, Number],
+    name: String,
     value: {
-      type: [String, Number],
+      type: String,
       required: true,
     },
     placeholder: {

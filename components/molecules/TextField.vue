@@ -14,6 +14,7 @@
     <div class="text-field">
       <atoms-base-input
         :id="id"
+        v-model="text"
         :type="type"
         :name="name"
         :value="value"
@@ -22,7 +23,6 @@
         :readonly="isReadonly"
         :disabled="isDisabled"
         @input="onInput"
-        v-model="text"
       />
       <atoms-base-typorgraphy
         v-if="units === 'count'"
@@ -54,14 +54,14 @@
 export default {
   name: 'TextField',
   props: {
-    id: [String, Number],
+    id: String,
     type: {
-      type: [String, Number],
+      type: String,
       default: 'text',
     },
-    name: [String, Number],
+    name: String,
     value: {
-      type: [String, Number],
+      type: String,
       required: true,
     },
     placeholder: {
@@ -84,7 +84,7 @@ export default {
     isError: {
       type: Boolean,
     },
-    label: [String, Number],
+    label: String,
 
     units: {
       type: String,

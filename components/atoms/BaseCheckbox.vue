@@ -1,8 +1,8 @@
 <template>
   <input
+    :id="id"
     type="checkbox"
     :class="['base-checkbox', classes]"
-    :id="id"
     :name="name"
     :value="value"
     :title="title"
@@ -15,15 +15,21 @@
 export default {
   name: 'BaseCheckbox',
   props: {
-    id: [String, Number],
-    type: {
-      type: [String, Number],
-      default: 'text',
+    id: {
+      type: String,
+      default: '',
     },
-    name: [String, Number],
+    name: {
+      type: String,
+      default: '',
+    },
     value: {
-      type: Boolean,
+      type: [Array, Boolean],
       required: true,
+    },
+    checkValue: {
+      type: [String, Boolean],
+      default: false,
     },
     title: {
       type: String,

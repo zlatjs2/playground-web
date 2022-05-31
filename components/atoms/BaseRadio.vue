@@ -1,8 +1,8 @@
 <template>
   <input
+    :id="id"
     type="radio"
     :class="['base-radio', classes]"
-    :id="id"
     :name="name"
     :value="radioValue"
     :title="title"
@@ -16,12 +16,14 @@
 export default {
   name: 'BaseRadio',
   props: {
-    id: [String, Number],
-    type: {
-      type: [String, Number],
-      default: 'text',
+    id: {
+      type: String,
+      default: '',
     },
-    name: [String, Number],
+    name: {
+      type: String,
+      default: '',
+    },
     value: {
       type: [String, Boolean],
       required: true,

@@ -1,22 +1,119 @@
 <template>
   <div>
-    <atoms-base-input v-model="userName" placeholder="이름" />
-    <atoms-base-input v-model="password" placeholder="패스워드" is-readonly />
+    <atoms-base-icon />
 
-    <molecules-text-field v-model="userId" maxlength="5" />
-
-    <div>이름: {{ userId }}</div>
+    <molecules-data-table :columns="columns" :rows="rows" checked />
   </div>
 </template>
 
 <script>
 export default {
   name: 'IndexPage',
+
   data() {
     return {
-      userName: '',
-      password: '',
-      userId: '',
+      columns: [
+        '응시자명',
+        '수험번호/사번',
+        '직무/분야',
+        '응시 상태',
+        '응시완료일',
+        '종합결과',
+        '',
+      ],
+
+      rows: [
+        {
+          id: 'row-1',
+          selected: false,
+          cells: [
+            {
+              id: 'td1',
+              value: 'td value 1',
+            },
+            {
+              id: 'td1',
+              value: 'td value 1',
+            },
+            {
+              id: 'td1',
+              value: 'td value 1',
+            },
+            {
+              id: 'td1',
+              value: 'td value 1',
+            },
+            {
+              id: 'td1',
+              value: 'td value 1',
+            },
+            {
+              id: 'td1',
+              value: 'td value 1',
+            },
+          ],
+        },
+        {
+          id: 'row-2',
+          selected: false,
+          cells: [
+            {
+              id: 'td2',
+              value: 'td value 2',
+            },
+            {
+              id: 'td2',
+              value: 'td value 2',
+            },
+            {
+              id: 'td2',
+              value: 'td value 2',
+            },
+            {
+              id: 'td2',
+              value: 'td value 2',
+            },
+            {
+              id: 'td2',
+              value: 'td value 2',
+            },
+            {
+              id: 'td2',
+              value: 'td value 2',
+            },
+          ],
+        },
+        {
+          id: 'row-3',
+          selected: false,
+          cells: [
+            {
+              id: 'td3',
+              value: 'td value 3',
+            },
+            {
+              id: 'td3',
+              value: 'td value 3',
+            },
+            {
+              id: 'td3',
+              value: 'td value 3',
+            },
+            {
+              id: 'td3',
+              value: 'td value 3',
+            },
+            {
+              id: 'td3',
+              value: 'td value 3',
+            },
+            {
+              id: 'td3',
+              value: 'td value 3',
+            },
+          ],
+        },
+      ],
     }
   },
   methods: {},
