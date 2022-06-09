@@ -1,8 +1,27 @@
 <template>
   <div>
-    <atoms-base-icon />
+    ### : {{ isOpen }}
+    <button type="button" @click="isOpen = !isOpen">버튼</button>
 
-    <molecules-data-table :columns="columns" :rows="rows" checked />
+    <molecules-app-snackbar
+      :is-show="isOpen"
+      message="111111111"
+      icon="success"
+      @close="closeModal"
+    />
+
+    <!-- <molecules-app-modal
+      heading="타이틀"
+      :is-show="isOpen"
+      @close="closeModal"
+      @cancel="closeModal"
+      @submit="submit"
+    >
+      <template #content> 123123123123 </template>
+    </molecules-app-modal> -->
+    <!-- <atoms-base-icon />
+
+    <molecules-data-table :columns="columns" :rows="rows" checked /> -->
   </div>
 </template>
 
@@ -12,6 +31,7 @@ export default {
 
   data() {
     return {
+      isOpen: false,
       columns: [
         '응시자명',
         '수험번호/사번',
@@ -116,7 +136,14 @@ export default {
       ],
     }
   },
-  methods: {},
+  methods: {
+    closeModal() {
+      this.isOpen = false
+    },
+    submit() {
+      console.log('### submit!: ')
+    },
+  },
 }
 </script>
 

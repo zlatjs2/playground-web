@@ -51,9 +51,6 @@ export default {
       return [`${prefix}--${this.size}`]
     },
   },
-  methods: {
-    closeModal() {},
-  },
 }
 </script>
 
