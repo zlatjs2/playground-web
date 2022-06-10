@@ -6,6 +6,7 @@
     :name="name"
     :value="value"
     :title="title"
+    :checked="value"
     :disabled="isDisabled"
     @change="onChange"
   />

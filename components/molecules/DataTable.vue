@@ -1,11 +1,19 @@
 <template>
   <div :class="['data-table']">
     <atoms-base-table>
+      <colgroup>
+        <col :style="{ width: 100 + 'px' }" />
+      </colgroup>
+
       <thead>
         <atoms-base-tablerow>
           <atoms-base-tablecell v-if="checked">
-            {{ isChecked }}
-            <atoms-base-checkbox v-model="isChecked" @change="checkAll" />
+            <atoms-base-checkbox
+              v-model="selected"
+              :check-value="selected"
+              @input="value => $emit('input', value)"
+            />
+            {{ selected }}
           </atoms-base-tablecell>
           <atoms-base-tablecell
             v-for="(column, mIdx) in columns"
@@ -26,11 +34,10 @@
         >
           <atoms-base-tablecell v-if="checked">
             <atoms-base-checkbox
-              v-model="checkItems"
-              :check-value="row.id"
-              @change="onChange"
+              v-model="row.selected"
+              :check-value="row.selected"
             />
-            {{ checkItems }}
+            {{ row.selected }}
           </atoms-base-tablecell>
           <atoms-base-tablecell v-for="(cell, sIdx) in row.cells" :key="sIdx">
             {{ cell.value }}
@@ -44,7 +51,7 @@
 <script>
 export default {
   name: 'DataTable',
-
+  emit: ['input'],
   props: {
     columns: {
       type: Array,
@@ -58,23 +65,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    isChecked: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      isChecked: false,
-      checkItems: [],
+      selected: this.isChecked,
     }
-  },
-  methods: {
-    checkAll() {
-      if (this.isChecked) {
-      } else {
-      }
-    },
-    onChange(items) {
-      console.log('### items: ', items)
-      // this.checkItems = items
-    },
   },
 }
 </script>
