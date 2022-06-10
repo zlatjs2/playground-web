@@ -9,11 +9,11 @@
         <atoms-base-tablerow>
           <atoms-base-tablecell v-if="checked">
             <atoms-base-checkbox
-              v-model="selected"
-              :check-value="selected"
-              @input="value => $emit('input', value)"
+              v-model="isChecked"
+              :check-value="isChecked"
+              @input="value => $emit('all', value)"
             />
-            {{ selected }}
+            {{ isChecked }}
           </atoms-base-tablecell>
           <atoms-base-tablecell
             v-for="(column, mIdx) in columns"
@@ -36,6 +36,7 @@
             <atoms-base-checkbox
               v-model="row.selected"
               :check-value="row.selected"
+              @input="onInput"
             />
             {{ row.selected }}
           </atoms-base-tablecell>
@@ -65,15 +66,18 @@ export default {
       type: Boolean,
       default: false,
     },
-    isChecked: {
-      type: Boolean,
-      default: false,
-    },
   },
   data() {
     return {
-      selected: this.isChecked,
+      isChecked: false,
     }
+  },
+  methods: {
+    onInput() {
+      const checkedRows = this.rows.filter(row => row.selected)
+
+      this.isChecked = checkedRows.length === this.rows.length
+    },
   },
 }
 </script>
