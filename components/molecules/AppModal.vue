@@ -1,10 +1,6 @@
 <template>
   <transition name="fade">
-    <div
-      v-if="isShow"
-      :class="['app-modal-wrap', classes]"
-      @click="() => $emit('close')"
-    >
+    <div v-if="isShow" :class="['app-modal-wrap', classes]" @click="onClose">
       <div class="app-modal">
         <div class="app-modal__header">
           <atoms-base-typorgraphy component="h2">
@@ -49,6 +45,14 @@ export default {
       const prefix = 'app-modal-wrap'
 
       return [`${prefix}--${this.size}`]
+    },
+  },
+  methods: {
+    onClose(e) {
+      console.log('### 111:', 111)
+
+      e.stopPropagation()
+      this.$emit('close')
     },
   },
 }
