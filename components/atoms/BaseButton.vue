@@ -17,7 +17,7 @@ export default {
   name: 'BaseButton',
   props: {
     id: {
-      type: String,
+      type: [String, Number],
       default: '',
     },
     type: {

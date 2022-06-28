@@ -7,13 +7,27 @@
       </nuxt-link>
       <atoms-base-button
         v-else
+        :id="idx"
         color="white"
-        is-full-width
         class="accordion-menu__item"
+        is-full-width
+        @click="onSelect"
       >
-        {{ item.text }}
+        <atoms-base-typorgraphy component="div" variant="body2">
+          {{ item.text }}
+        </atoms-base-typorgraphy>
         <atoms-base-icon name="arrowDown" color="secondary" size="12" />
       </atoms-base-button>
+      <div
+        :class="[
+          'accordion-menu__content',
+          selectKey === String(idx)
+            ? 'accordion-menu__content--isSelected'
+            : '',
+        ]"
+      >
+        {{ item.content }}
+      </div>
     </div>
   </div>
 </template>
@@ -25,6 +39,23 @@ export default {
     items: {
       type: Array,
       required: true,
+    },
+  },
+  data() {
+    return {
+      // isSelected: false,
+      selectKey: -1,
+    }
+  },
+  // computed: {
+  //   isSelected() {
+  //     return this.selectKey ===
+  //   },
+  // },
+  methods: {
+    onSelect(e) {
+      e.preventDefault()
+      this.selectKey = e.target.id
     },
   },
 }
@@ -42,6 +73,18 @@ export default {
     align-content: center;
     align-items: center;
     justify-content: space-between;
+    text-align: left;
+    .base-typorgraphy {
+      margin-right: $spacing;
+      flex-grow: 1;
+    }
+  }
+  &__content {
+    display: none;
+    padding: $spacing;
+    &--isSelected {
+      display: block;
+    }
   }
 }
 </style>

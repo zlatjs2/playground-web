@@ -70,7 +70,7 @@
 import authMixin from '@/mixins/auth.js'
 
 export default {
-  name: 'SignIn',
+  name: 'SigninPage',
   mixins: [authMixin],
   layout: 'memberLayout',
   data() {

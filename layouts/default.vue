@@ -2,7 +2,11 @@
   <div class="app-wrapper">
     <header class="app-header">
       <section class="app-header__content">
-        <atoms-base-typorgraphy component="h1" variant="h1">
+        <atoms-base-typorgraphy
+          v-if="$route.name === 'index'"
+          component="h1"
+          variant="h1"
+        >
           <svg width="100px" viewBox="0 0 362 51">
             <g
               id="Page-1"
@@ -28,8 +32,8 @@
           </svg>
         </atoms-base-typorgraphy>
 
-        <atoms-base-typorgraphy component="h2" variant="title6">
-          <!-- 앱 타이틀 -->
+        <atoms-base-typorgraphy v-else component="h2" variant="body1">
+          공지사항
         </atoms-base-typorgraphy>
 
         <atoms-base-button variant="text" @click="onDrawer">
@@ -123,15 +127,15 @@ export default {
       items: [
         {
           text: '공지사항',
-          link: '/notice',
+          link: '/board/notice',
         },
         {
           text: '자주묻는질문',
-          link: '/qna',
+          link: '/board/qna',
         },
         {
           text: '설정',
-          link: '/',
+          link: '/member/setting',
         },
         {
           text: '카카오톡 1:1 문의',
@@ -153,6 +157,9 @@ export default {
         },
       ],
     }
+  },
+  mounted() {
+    console.log('### this.$route:', this.$route)
   },
   methods: {
     onDrawer() {
@@ -176,9 +183,12 @@ export default {
     align-content: center;
     padding: 0 $spacing;
     min-height: 58px;
-    .base-typorgraphy--title6 {
-      margin: 0 $spacing;
+    .base-typorgraphy {
       flex-grow: 1;
+      margin: 0 $spacing;
+    }
+    .base-typorgraphy--body1 {
+      font-weight: 700;
     }
   }
 }
