@@ -20,6 +20,9 @@ export default {
       type: String,
       default: 'primary', // primary, secondary, error, disabled
     },
+    getterBottom: {
+      type: Boolean,
+    },
   },
   computed: {
     classes() {
@@ -27,6 +30,7 @@ export default {
 
       return [
         `${prefix}--${this.color}`,
+        this.getterBottom && `${prefix}--getter-bottom`,
         this.variant && `${prefix}--${this.variant}`,
       ]
     },
@@ -75,6 +79,10 @@ export default {
   }
   &--error {
     color: $text-error;
+  }
+
+  &--getter-bottom {
+    margin-bottom: $spacing;
   }
 }
 </style>

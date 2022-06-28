@@ -16,32 +16,42 @@
 export default {
   name: 'BaseButton',
   props: {
-    id: [String, Number],
+    id: {
+      type: String,
+      default: '',
+    },
     type: {
-      type: [String, Number],
+      type: String,
       default: 'button',
     },
-    name: [String, Number],
-    value: [String, Number],
+    name: {
+      type: String,
+      default: '',
+    },
+    value: {
+      type: String,
+      default: '',
+    },
     size: {
       type: String,
       default: 'medium', // small, medium, large
     },
     color: {
       type: String,
-      default: 'grey', // grey, primary, secondary, success, info, warning, error
+      default: 'grey', // white, grey, primary, secondary, success, info, warning, error
     },
     variant: {
       type: String,
       default: 'contained', // outlined, contained, text
     },
+    getterBottom: {
+      type: Boolean,
+    },
     isDisabled: {
       type: Boolean,
-      default: false,
     },
     isFullWidth: {
       type: Boolean,
-      default: false,
     },
   },
   computed: {
@@ -52,6 +62,7 @@ export default {
         `${prefix}--${this.size}`,
         `${prefix}--${this.color}`,
         `${prefix}--${this.variant}`,
+        this.getterBottom && `${prefix}--getter-bottom`,
         this.isFullWidth && `${prefix}--fullwidth`,
         this.isDisabled && `${prefix}--disabled`,
       ]
@@ -86,6 +97,17 @@ export default {
   &--contained {
     border: 1px solid;
     color: $common-white;
+  }
+
+  &--white {
+    border-color: $common-white;
+    color: $text-primary;
+    &.base-button--outlined {
+      border-color: $text-primary;
+    }
+    &.base-button--contained {
+      background-color: $common-white;
+    }
   }
 
   &--grey {
@@ -145,6 +167,8 @@ export default {
   }
 
   &--text {
+    min-width: 44px;
+    line-height: 44px;
     &:hover {
       text-decoration: underline;
     }
@@ -153,13 +177,16 @@ export default {
   &--fullwidth {
     width: 100%;
   }
+  &--getter-bottom {
+    margin-bottom: $spacing;
+  }
   &--disabled {
     color: $text-disabled;
     background-color: $grey020;
   }
 
   &:hover {
-    &.base-button--primary {
+    /* &.base-button--primary {
       background-color: $primary-dark;
     }
     &.base-button--secondary {
@@ -167,7 +194,7 @@ export default {
     }
     &.base-button--grey {
       background-color: $grey070;
-    }
+    } */
   }
 }
 </style>

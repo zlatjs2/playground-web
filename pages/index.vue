@@ -1,37 +1,19 @@
 <template>
   <div>
-    ### : {{ isOpen }}
-    <button type="button" @click="isOpen = !isOpen">버튼</button>
-
-    <!-- <molecules-app-snackbar
-      :is-show="isOpen"
-      message="111111111"
-      icon="success"
-      @close="closeModal"
-    /> -->
-
-    <molecules-app-modal
-      heading="타이틀"
-      :is-show="isOpen"
-      @close="closeModal"
-      @cancel="closeModal"
-      @submit="submit"
-    >
-      <template #content> 123123123123 </template>
-    </molecules-app-modal>
-
-    <molecules-data-table
+    111
+    <!-- <molecules-data-table
       :columns="columns"
       :rows="rows"
       checked
       @all="checkedAll"
-    />
+    /> -->
   </div>
 </template>
 
 <script>
 export default {
   name: 'IndexPage',
+  middleware: ['auth'],
 
   data() {
     return {
@@ -148,7 +130,6 @@ export default {
     checkedAll(val) {
       this.rows.forEach(row => (row.selected = val))
     },
-
     submit() {
       console.log('### submit!: ')
     },

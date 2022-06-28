@@ -6,6 +6,7 @@
     :width="width"
     :height="height"
     :alt="alt"
+    :class="['base-image', classes]"
     @error="onError"
   />
 </template>
@@ -40,11 +41,21 @@ export default {
       type: String,
       default: '',
     },
+    isRadius: {
+      type: Boolean,
+    },
   },
   data() {
     return {
       isError: false,
     }
+  },
+  computed: {
+    classes() {
+      const prefix = 'base-image'
+
+      return [`${prefix}--${this.isRadius && 'isRadius'}`]
+    },
   },
   methods: {
     onError(e) {
@@ -54,4 +65,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.base-image {
+  &--isRadius {
+    border-radius: 50%;
+  }
+}
+</style>

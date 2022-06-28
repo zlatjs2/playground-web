@@ -12,11 +12,17 @@ export default {
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    script: [
+      { src: 'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js' },
+      { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
+    ],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  // css: ['@/assets/scss/index.scss'],
-
+  css: ['@/assets/scss/index.scss'],
+  styleResources: {
+    scss: '@/assets/scss/index.scss',
+  },
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
 
@@ -27,12 +33,15 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
-    '@nuxtjs/style-resources'
+    '@nuxtjs/style-resources',
+    [
+      '@nuxtjs/dotenv',
+      {
+        filename: `.env.${process.env.NODE_ENV}`,
+        systemvars: true,
+      },
+    ],
   ],
-
-  styleResources: {
-    scss: '@/assets/scss/index.scss'
-  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [

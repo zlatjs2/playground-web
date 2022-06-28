@@ -1,6 +1,10 @@
 <template>
   <transition name="fade">
-    <div v-if="isShow" :class="['app-modal-wrap', classes]" @click="onClose">
+    <div
+      v-if="isShow"
+      :class="['app-modal-wrap', classes]"
+      @click.self="onClose"
+    >
       <div class="app-modal">
         <div class="app-modal__header">
           <atoms-base-typorgraphy component="h2">

@@ -145,7 +145,7 @@ export default {
     }
   }
   &--getter-bottom {
-    margin-bottom: $spacing * 2;
+    margin-bottom: $spacing;
   }
 }
 .base-label {

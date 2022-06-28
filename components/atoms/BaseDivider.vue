@@ -27,9 +27,8 @@ export default {
 
 <style lang="scss" scoped>
 .base-divider {
-  margin: 0;
+  margin: $spacing 0;
   border: 0 none;
-
   border-color: $divider;
   &--horizontal {
     width: 100%;
