@@ -3,7 +3,7 @@
     <atoms-base-typorgraphy component="h2" variant="title4" getter-bottom>
       로그인
     </atoms-base-typorgraphy>
-    <form>
+    <form @submit="onSubmit">
       <molecules-text-field
         v-model="email"
         placeholder="이메일"
@@ -20,7 +20,7 @@
         variant="contained"
         is-full-width
         getter-bottom
-        @click="signInWithEmail"
+        @click="signInWithGoogle"
       >
         로그인
       </atoms-base-button>
@@ -52,63 +52,28 @@
         id="naverIdLogin"
         type="button"
         class="sns-btn sns-btn__naver"
-        @click="signInWithNaver"
+        @click="signinNaver"
       ></button>
 
       <button
         id="kakao-talk-channel-chat-button"
         type="button"
         class="sns-btn sns-btn__kakao"
-        @click="signInWithKakao"
+        @click="signInKakao"
       ></button>
 
-      <button
-        type="button"
-        class="sns-btn sns-btn__google"
-        @click="signInWithGoogle"
-      ></button>
+      <button type="button" class="sns-btn sns-btn__google"></button>
     </section>
   </div>
 </template>
 
 <script>
 // import authMixin from '@/mixins/auth.js'
-import { GoogleAuthProvider } from 'firebase/auth'
 
 export default {
   name: 'SigninPage',
   // mixins: [authMixin],
   layout: 'memberLayout',
-  async asyncData({ $axios, $cookiz, $fire, query, redirect }) {
-    console.log('### query:', query)
-
-    if (query.code) {
-      const company = query.state ? 'naver' : 'kakao'
-      console.log('### company:', company)
-
-      try {
-        const response = await $axios.post(
-          `${process.env.API_HOST}/${company}-auth`,
-          {
-            code: query.code,
-            state: query.state,
-          },
-        )
-
-        console.log('### 1:', response)
-
-        if (response.status === 200) {
-          const { body } = response.data
-          const infos = await $fire.auth.signInWithCustomToken(body)
-
-          $cookiz.set(`firebase:${company}`, infos.user)
-          redirect('/')
-        }
-      } catch (error) {
-        console.warn('### 에러:', error)
-      }
-    }
-  },
   data() {
     return {
       email: 'admin@gmail.com',
@@ -117,38 +82,42 @@ export default {
     }
   },
   mounted() {
-    console.log('### this.$config:', this.$config)
-    console.log('### this.$route.query:', this.$route.query)
+    console.log('### :', this.$store.state)
   },
   methods: {
-    signInWithKakao() {
-      const { kakaoRestApiKey, redirectUrl } = this.$config
-      const baseUrl = 'https://kauth.kakao.com/oauth/authorize'
-
-      window.location.href = `${baseUrl}?client_id=${kakaoRestApiKey}&redirect_uri=${redirectUrl}&response_type=code`
+    async signInWithGoogle() {
+      try {
+        const response = await this.$fire.auth.signInWithEmailAndPassword(
+          this.email,
+          this.password,
+        )
+        this.$store.dispatch('common/signInWithEmailAndPassword', response)
+      } catch (error) {
+        console.log('### error.response:', error.response)
+      }
     },
-    signInWithNaver() {
-      const { naverClientId, redirectUrl } = this.$config
-      const baseUrl = 'https://nid.naver.com/oauth2.0/authorize'
-
-      window.location.href = `${baseUrl}?response_type=code&client_id=${naverClientId}&redirect_uri=${redirectUrl}&state=RAMDOM_STATE`
+    // signOut({commit}){
+    //     auth.signOut().then(() => {
+    //         commit('setUser', null)
+    //     }).catch(error => console.error(error))
+    // },
+    onSubmit() {
+      console.log('### 1:', 1)
     },
-    signInWithGoogle() {
-      const { auth } = this.$fire
-      const provider = new GoogleAuthProvider()
-
-      auth
-        .signInWithPopup(provider)
-        .then(res => {
-          console.log('### 1:', 1)
-
-          this.$cookiz.set(`firebase:google`, res.user)
-          this.$router.push('/')
-        })
-        .catch(err => console.log('### err:', err))
+    signinNaver() {
+      this.naverLogin.reprompt()
     },
-    signInWithEmail() {
-      console.log('### 준비중:')
+    signInKakao() {
+      const _this = this
+      window.Kakao.Auth.login({
+        success(response) {
+          console.log('### response:', response)
+          _this.watchStateKakao()
+        },
+        fail(error) {
+          console.log(error)
+        },
+      })
     },
   },
 }

@@ -36,6 +36,11 @@
           공지사항
         </atoms-base-typorgraphy>
 
+        <atoms-base-button variant="text" @click="signOut">
+          로그아웃
+          <!-- <atoms-base-icon name="menu" color="primary" size="20" /> -->
+        </atoms-base-button>
+
         <atoms-base-button variant="text" @click="onDrawer">
           <atoms-base-icon name="menu" color="primary" size="20" />
         </atoms-base-button>
@@ -164,6 +169,30 @@ export default {
   methods: {
     onDrawer() {
       this.isDrawer = !this.isDrawer
+    },
+    signOut() {
+      const { kakaoRestApiKey, redirectUrl } = this.$config
+      const { users } = this.$store.state.common
+      const company = users.uid.split(':')[0]
+
+      if (company === 'kakao') {
+        const baseUrl = 'https://kauth.kakao.com/oauth/logout'
+        window.location.href = `${baseUrl}?client_id=${kakaoRestApiKey}&logout_redirect_uri=${redirectUrl}`
+      } else if (company === 'naver') {
+        this.$store.dispatch('common/USER_INFO')
+        this.$router.push('/signin')
+      } else {
+        this.$fire.auth
+          .signOut()
+          .then(() => {
+            this.$router.push('/signin')
+            this.$cookiz.remove(`firebase:google`)
+            return false
+          })
+          .catch(err => console.log('### err: ', err))
+      }
+
+      this.$cookiz.remove(`firebase:${company}`)
     },
   },
 }

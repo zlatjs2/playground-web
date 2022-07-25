@@ -20,12 +20,7 @@ module.exports = {
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
-    script: [
-      { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
-      {
-        src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ_tFbGy7MuIqgv91-V1ETT--ruFG3qoY&libraries=places"',
-      },
-    ],
+    script: [{ src: 'https://developers.kakao.com/sdk/js/kakao.js' }],
   },
 
   // 프론트엔드에 노출되는 환경 변수

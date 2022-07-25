@@ -7,18 +7,16 @@
 <script>
 export default {
   name: 'NoticePage',
+  async asyncData({ $fire }) {
+    const notices = await $fire.firestore.collection('notices').get()
+
+    return {
+      items: notices.docs.map(doc => doc.data()),
+    }
+  },
   data() {
     return {
-      items: [
-        {
-          text: '공지사항1공지사항1공지사항1공지사항1공지사항1공지사항1공지사항1공지사항1공지사항1',
-          content: '1111111',
-        },
-        {
-          text: '공지사항1',
-          content: '22222',
-        },
-      ],
+      items: null,
     }
   },
 }

@@ -63,5 +63,19 @@ export default {
         },
       })
     },
+    logout() {
+      if (window.Kakao.Auth.getAccessToken()) {
+        window.Kakao.API.request({
+          url: '/v1/user/unlink',
+          success(response) {
+            console.log(response)
+          },
+          fail(error) {
+            console.log(error)
+          },
+        })
+        window.Kakao.Auth.setAccessToken(undefined)
+      }
+    },
   },
 }

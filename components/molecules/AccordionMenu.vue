@@ -14,7 +14,7 @@
         @click="onSelect"
       >
         <atoms-base-typorgraphy component="div" variant="body2">
-          {{ item.text }}
+          {{ item.title }}
         </atoms-base-typorgraphy>
         <atoms-base-icon name="arrowDown" color="secondary" size="12" />
       </atoms-base-button>
@@ -80,6 +80,7 @@ export default {
     }
   }
   &__content {
+    @include font(body2);
     display: none;
     padding: $spacing;
     &--isSelected {
