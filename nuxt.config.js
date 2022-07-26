@@ -23,10 +23,14 @@ module.exports = {
     script: [
       { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
       {
-        src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ_tFbGy7MuIqgv91-V1ETT--ruFG3qoY&libraries=places"',
+        src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDGxiZ8vu95zh9qGvPaUUeScLyIEQ1ynpw&libraries=places&v=weekly&radius=5000',
       },
     ],
   },
+
+
+
+  
 
   // 프론트엔드에 노출되는 환경 변수
   publicRuntimeConfig: {
