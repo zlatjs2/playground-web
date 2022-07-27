@@ -23,7 +23,10 @@ module.exports = {
     script: [
       { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
       {
-        src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDGxiZ8vu95zh9qGvPaUUeScLyIEQ1ynpw&libraries=places&v=weekly&radius=5000',
+        hid: 'maps-googleapis',
+        src: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAP_KEY}&libraries=places`,
+        defer: true,
+        // callback: this.googleAutocompleteInit,
       },
     ],
   },

@@ -1,56 +1,48 @@
 <template>
   <section>
-    <div class="hospital-search">
-      <div id="findhospital">Find hospital in:</div>
+    <ul v-if="results">
+      <li v-for="(result, idx) in results" :key="idx">
+        <button type="button" @click="showMaker" :id="idx">
+          <!-- <img :src="result.icon" alt="" /> -->
+          {{ result.name }}
+        </button>
+      </li>
+    </ul>
 
-      <div id="locationField">
-        <input id="autocomplete" placeholder="Enter a city" type="text" />
-      </div>
+    <input
+      id="autocomplete"
+      :placeholder="placeholder"
+      size="100"
+      type="text"
+    />
 
-      <div id="controls">
-        <atoms-base-select
-          id="country"
-          v-model="selection"
-          :options="options"
-          :default-value="options[0]"
-          @change="setAutocompleteCountry"
-        />
-      </div>
-    </div>
+    <atoms-base-select
+      id="country"
+      v-model="selection"
+      :options="options"
+      :default-value="options[0]"
+      @change="setAutocompleteCountry"
+    />
 
     <div id="map" :style="{ width: '100%', height: '60vh' }"></div>
 
-    <div id="listing">
-      <table id="resultsTable">
-        <tbody id="results"></tbody>
-      </table>
-    </div>
+    <div id="info-content">
+      <ul v-if="currentPlace">
+        <li>{{ currentPlace.url }}</li>
+        <li>{{ currentPlace.name }}</li>
+        <li>{{ currentPlace.vicinity }}</li>
+        <li>{{ currentPlace.formatted_phone_number }}</li>
 
-    <div style="display: none">
-      <div id="info-content">
-        <table>
-          <tr id="iw-url-row" class="iw_table_row">
-            <td id="iw-icon" class="iw_table_icon"></td>
-            <td id="iw-url"></td>
-          </tr>
-          <tr id="iw-address-row" class="iw_table_row">
-            <td class="iw_attribute_name">Address:</td>
-            <td id="iw-address"></td>
-          </tr>
-          <tr id="iw-phone-row" class="iw_table_row">
-            <td class="iw_attribute_name">Telephone:</td>
-            <td id="iw-phone"></td>
-          </tr>
-          <tr id="iw-rating-row" class="iw_table_row">
-            <td class="iw_attribute_name">Rating:</td>
-            <td id="iw-rating"></td>
-          </tr>
-          <tr id="iw-website-row" class="iw_table_row">
-            <td class="iw_attribute_name">Website:</td>
-            <td id="iw-website"></td>
-          </tr>
-        </table>
-      </div>
+        <li v-if="currentPlace.rating">별점 : {{ currentPlace.rating }}</li>
+        <li>
+          <a :href="currentPlace.url" target="_blank"> 구글 링크 바로가기 </a>
+        </li>
+        <li v-if="currentPlace.website">
+          <a :href="currentPlace.website" target="_blank">
+            홈페이지 바로가기
+          </a>
+        </li>
+      </ul>
     </div>
   </section>
 </template>
@@ -126,6 +118,9 @@ export default {
       },
       options: ['kr', 'us'],
       selection: '',
+      placeholder: '검색어를 입력해주세요.',
+      results: null,
+      currentPlace: null,
     }
   },
   mounted() {
@@ -133,8 +128,6 @@ export default {
   },
   methods: {
     initMap() {
-      const countryRestrict = { country: 'kr' }
-
       this.map = new window.google.maps.Map(document.getElementById('map'), {
         zoom: this.countries.kr.zoom,
         center: this.countries.kr.center,
@@ -144,20 +137,135 @@ export default {
         streetViewControl: true,
       })
 
+      // https://developers.google.com/maps/documentation/javascript/reference/places-service
+      this.places = new window.google.maps.places.PlacesService(this.map)
       this.infoWindow = new window.google.maps.InfoWindow({
         content: document.getElementById('info-content'),
       })
-      this.autocomplete = new window.google.maps.places.Autocomplete(
-        document.getElementById('autocomplete'),
-        {
-          types: ['(cities)'],
-          componentRestrictions: countryRestrict,
-        },
-      )
-      this.places = new window.google.maps.places.PlacesService(this.map)
-      this.autocomplete.addListener('place_changed', this.onPlaceChanged)
+      this.autoComplete()
     },
-    setAutocompleteCountry() {
+    autoComplete() {
+      // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service
+      const input = document.getElementById('autocomplete')
+      const options = {
+        // types: ['(cities)'], // 반환 될 유형
+        componentRestrictions: { country: 'kr' }, // 제한 사항
+      }
+      this.autocomplete = new window.google.maps.places.Autocomplete(
+        input,
+        options,
+      )
+      this.autocomplete.addListener('place_changed', this.changedPlace)
+    },
+    changedPlace() {
+      const place = this.autocomplete.getPlace()
+      if (place.geometry && place.geometry.location) {
+        this.map.panTo(place.geometry.location)
+        this.map.setZoom(15)
+        this.search()
+      } else {
+        this.placeholder = '검색어를 입력해주세요.'
+      }
+    },
+    search() {
+      const search = {
+        bounds: this.map.getBounds(),
+        types: ['veterinary_care'],
+      }
+      const MARKER_PATH =
+        'https://developers.google.com/maps/documentation/javascript/images/marker_green'
+
+      this.places.nearbySearch(search, (results, status, pagination) => {
+        if (
+          status === window.google.maps.places.PlacesServiceStatus.OK &&
+          results
+        ) {
+          this.reset()
+          this.results = results
+          results.forEach((result, idx) => {
+            const markerLetter = String.fromCharCode(
+              'A'.charCodeAt(0) + (idx % 26),
+            )
+            const icon = MARKER_PATH + markerLetter + '.png'
+            const marker = new window.google.maps.Marker({
+              position: results[idx].geometry.location,
+              animation: window.google.maps.Animation.DROP,
+              icon,
+            })
+
+            this.markers.push(marker)
+            this.markers[idx].placeResult = results[idx]
+
+            window.google.maps.event.addListener(
+              this.markers[idx],
+              'click',
+              () => this.showInfoWindow(this.markers[idx]),
+            )
+            setTimeout(this.markers[idx].setMap(this.map), idx * 100)
+
+            console.log('### result: ', result)
+          })
+        }
+      })
+    },
+    reset() {
+      // clear results
+      this.results = null
+      // clear markers
+      this.markers.forEach(marker => {
+        marker.setMap(null)
+        this.markers = []
+      })
+    },
+    showInfoWindow(marker) {
+      const options = {
+        placeId: marker.placeResult.place_id,
+        // fields: ['opening_hours', 'utc_offset_minutes'],
+      }
+
+      this.places.getDetails(options, (place, status) => {
+        if (status !== 'OK') return
+        const isOpenAtTime = place.opening_hours.isOpen(
+          new Date('December 17, 2020 03:24:00'),
+        )
+        if (isOpenAtTime) {
+          // We know it's open.
+          console.log('### isOpenAtTime: ', isOpenAtTime)
+        }
+
+        const isOpenNow = place.opening_hours.isOpen()
+        if (isOpenNow) {
+          // We know it's open.
+          console.log('### isOpenNow: ', isOpenNow)
+        }
+
+        console.log('### place: ', place)
+        this.currentPlace = place
+        this.infoWindow.open({
+          anchor: marker,
+          map: this.map,
+          shouldFocus: false,
+        })
+      })
+    },
+    showMaker(e) {
+      const { id } = e.target
+      console.log('### id: ', id)
+      // window.google.map.event.trigger(this.markers[id], 'click')
+      // this.infoWindow.open({
+      //   anchor: marker,
+      //   map: this.map,
+      //   shouldFocus: false,
+      // })
+
+      // this.currentPlace = place
+      // this.infoWindow.open({
+      //   anchor: marker,
+      //   map: this.map,
+      //   shouldFocus: false,
+      // })
+    },
+    setCountry() {
       if (this.selection === 'all') {
         this.autocomplete.setComponentRestrictions({ country: [] })
         this.map.setCenter({ lat: 15, lng: 0 })
@@ -167,164 +275,7 @@ export default {
         this.map.setCenter(this.countries[this.selection].center)
         this.map.setZoom(this.countries[this.selection].zoom)
       }
-      this.clearResults()
-      this.clearMarkers()
-    },
-
-    onPlaceChanged() {
-      const place = this.autocomplete.getPlace()
-
-      if (place.geometry && place.geometry.location) {
-        this.map.panTo(place.geometry.location)
-        this.map.setZoom(15)
-        this.search()
-      } else {
-        document.getElementById('autocomplete').placeholder = 'Enter a city'
-      }
-    },
-    clearMarkers() {
-      for (let i = 0; i < this.markers.length; i++) {
-        if (this.markers[i]) {
-          this.markers[i].setMap(null)
-        }
-      }
-      this.markers = []
-    },
-    dropMarker(i) {
-      this.markers[i].setMap(this.map)
-    },
-    addResult(result, i) {
-      const MARKER_PATH =
-        'https://developers.google.com/maps/documentation/javascript/images/marker_green'
-      const results = document.getElementById('results')
-      const markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26))
-      const markerIcon = MARKER_PATH + markerLetter + '.png'
-      const tr = document.createElement('tr')
-      const { markers } = this
-      tr.style.backgroundColor = i % 2 === 0 ? '#F0F0F0' : '#FFFFFF'
-
-      tr.onclick = function () {
-        window.google.maps.event.trigger(markers[i], 'click')
-      }
-
-      const iconTd = document.createElement('td')
-      const nameTd = document.createElement('td')
-      const icon = document.createElement('img')
-      icon.src = markerIcon
-      icon.setAttribute('class', 'placeIcon')
-      icon.setAttribute('className', 'placeIcon')
-      const name = document.createTextNode(result.name)
-      iconTd.appendChild(icon)
-      nameTd.appendChild(name)
-      tr.appendChild(iconTd)
-      tr.appendChild(nameTd)
-      results.appendChild(tr)
-    },
-    clearResults() {
-      const results = document.getElementById('results')
-
-      while (results.childNodes[0]) {
-        results.removeChild(results.childNodes[0])
-      }
-    },
-    showInfoWindow(marker) {
-      this.places.getDetails(
-        { placeId: marker.placeResult.place_id },
-        (place, status) => {
-          if (status !== window.google.maps.places.PlacesServiceStatus.OK) {
-            return
-          }
-          this.infoWindow.open(this.map, marker)
-          this.buildIWContent(place)
-        },
-      )
-    },
-    buildIWContent(place) {
-      document.getElementById('iw-icon').innerHTML =
-        '<img class="hospitalIcon" ' + 'src="' + place.icon + '"/>'
-      document.getElementById('iw-url').innerHTML =
-        '<b><a href="' + place.url + '">' + place.name + '</a></b>'
-      document.getElementById('iw-address').textContent = place.vicinity
-
-      if (place.formatted_phone_number) {
-        document.getElementById('iw-phone-row').style.display = ''
-        document.getElementById('iw-phone').textContent =
-          place.formatted_phone_number
-      } else {
-        document.getElementById('iw-phone-row').style.display = 'none'
-      }
-
-      if (place.rating) {
-        let ratingHtml = ''
-
-        for (let i = 0; i < 5; i++) {
-          if (place.rating < i + 0.5) {
-            ratingHtml += '&#10025;'
-          } else {
-            ratingHtml += '&#10029;'
-          }
-          document.getElementById('iw-rating-row').style.display = ''
-          document.getElementById('iw-rating').innerHTML = ratingHtml
-        }
-      } else {
-        document.getElementById('iw-rating-row').style.display = 'none'
-      }
-
-      if (place.website) {
-        const hostnameRegexp = new RegExp('^https?://.+?/')
-
-        let fullUrl = place.website
-        let website = String(hostnameRegexp.exec(place.website))
-
-        if (!website) {
-          website = 'http://' + place.website + '/'
-          fullUrl = website
-
-          console.log('### fullUrl: ', fullUrl)
-        }
-        document.getElementById('iw-website-row').style.display = ''
-        document.getElementById('iw-website').textContent = website
-      } else {
-        document.getElementById('iw-website-row').style.display = 'none'
-      }
-    },
-    search() {
-      const search = {
-        bounds: this.map.getBounds(),
-        types: ['veterinary_care'],
-      }
-      const { maps } = window.google
-      const MARKER_PATH =
-        'https://developers.google.com/maps/documentation/javascript/images/marker_green'
-
-      this.places.nearbySearch(search, (results, status, pagination) => {
-        if (status === maps.places.PlacesServiceStatus.OK && results) {
-          this.clearResults()
-          this.clearMarkers()
-
-          for (let i = 0; i < results.length; i++) {
-            const markerLetter = String.fromCharCode(
-              'A'.charCodeAt(0) + (i % 26),
-            )
-            const markerIcon = MARKER_PATH + markerLetter + '.png'
-
-            this.markers[i] = new maps.Marker({
-              position: results[i].geometry.location,
-              animation: maps.Animation.DROP,
-              icon: markerIcon,
-            })
-
-            this.markers[i].placeResult = results[i]
-            maps.event.addListener(
-              this.markers[i],
-              'click',
-              this.showInfoWindow(this.markers[i]),
-            )
-            setTimeout(this.dropMarker(i), i * 100)
-            this.addResult(results[i], i)
-          }
-        }
-      })
+      this.reset()
     },
   },
 }

@@ -12,6 +12,7 @@ module.exports = {
   plugins: [],
   // add your custom rules here
   rules: {
-    "eslint prefer-regex-literals": 'error'
+    "eslint prefer-regex-literals": 'error',
+    "disallowRedundantWrapping": true
   },
 }
