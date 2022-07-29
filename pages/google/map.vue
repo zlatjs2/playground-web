@@ -1,30 +1,12 @@
 <template>
   <section>
-    <ul v-if="results">
-      <li v-for="(result, idx) in results" :key="idx">
-        <button type="button" @click="showMaker" :id="idx">
-          <!-- <img :src="result.icon" alt="" /> -->
-          {{ result.name }}
-        </button>
-      </li>
-    </ul>
-
-    <input
+    <molecules-text-field
       id="autocomplete"
+      v-model="keyword"
       :placeholder="placeholder"
       size="100"
-      type="text"
     />
-
-    <atoms-base-select
-      id="country"
-      v-model="selection"
-      :options="options"
-      :default-value="options[0]"
-      @change="setAutocompleteCountry"
-    />
-
-    <div id="map" :style="{ width: '100%', height: '60vh' }"></div>
+    <div id="map" :style="{ width: '100%', height: '96vh' }"></div>
 
     <div id="info-content">
       <ul v-if="currentPlace">
@@ -48,6 +30,7 @@
 </template>
 
 <script>
+import markerIcon from '@/assets/images/common/icon__location-marker.png'
 export default {
   name: 'GoogleMap',
   layout: 'mapLayout',
@@ -56,7 +39,8 @@ export default {
       map: null,
       places: null,
       infoWindow: null,
-      markers: [],
+      currentPlace: null,
+      marker: null,
       autocomplete: null,
       countries: {
         au: {
@@ -116,40 +100,74 @@ export default {
           zoom: 16,
         },
       },
-      options: ['kr', 'us'],
-      selection: '',
       placeholder: '검색어를 입력해주세요.',
-      results: null,
-      currentPlace: null,
+      keyword: '',
+      latitude: '',
+      longitude: '',
     }
   },
+
   mounted() {
-    this.initMap()
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        this.locationSuccess,
+        this.locationError,
+        {
+          enableHighAccuracy: true,
+          maximumAge: 30000,
+          timeout: 27000,
+        },
+      )
+    } else {
+      console.log('지오 로케이션 없음')
+    }
   },
   methods: {
+    locationSuccess(p) {
+      this.latitude = p.coords.latitude
+      this.longitude = p.coords.longitude
+      console.log('### 1:', this.latitude, this.longitude)
+      this.initMap()
+    },
+
+    locationError(error) {
+      const errorTypes = {
+        0: '무슨 에러냥~',
+        1: '허용 안눌렀음',
+        2: '위치가 안잡힘',
+        3: '응답시간 지남',
+      }
+      const errorMsg = errorTypes[error.code]
+      console.log('### errorMsg:', errorMsg)
+    },
+
     initMap() {
+      const myLatLng = new window.google.maps.LatLng(
+        this.latitude,
+        this.longitude,
+      )
+
+      console.log('### 2:', this.latitude, this.longitude)
+
       this.map = new window.google.maps.Map(document.getElementById('map'), {
         zoom: this.countries.kr.zoom,
-        center: this.countries.kr.center,
+        // center: this.countries.kr.center,
+        center: myLatLng,
         mapTypeControl: true,
         panControl: true,
         zoomControl: true,
         streetViewControl: true,
       })
 
-      // https://developers.google.com/maps/documentation/javascript/reference/places-service
       this.places = new window.google.maps.places.PlacesService(this.map)
       this.infoWindow = new window.google.maps.InfoWindow({
         content: document.getElementById('info-content'),
       })
-      this.autoComplete()
-    },
-    autoComplete() {
-      // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service
       const input = document.getElementById('autocomplete')
       const options = {
+        // types: ['bakery', 'park', 'restaurant'],
         // types: ['(cities)'], // 반환 될 유형
-        componentRestrictions: { country: 'kr' }, // 제한 사항
+        // componentRestrictions: { country: 'kr' }, // 제한 사항
       }
       this.autocomplete = new window.google.maps.places.Autocomplete(
         input,
@@ -162,108 +180,41 @@ export default {
       if (place.geometry && place.geometry.location) {
         this.map.panTo(place.geometry.location)
         this.map.setZoom(15)
-        this.search()
+        console.log('### place:', place)
+
+        this.reset()
+
+        this.marker = new window.google.maps.Marker({
+          position: place.geometry.location,
+          animation: window.google.maps.Animation.DROP,
+          icon: markerIcon,
+        })
+        this.marker.placeResult = place
+        this.currentPlace = place
+
+        window.google.maps.event.addListener(
+          this.marker,
+          'click',
+          this.showInfoWindow,
+        )
+
+        setTimeout(this.marker.setMap(this.map), 0 * 100)
       } else {
         this.placeholder = '검색어를 입력해주세요.'
       }
     },
-    search() {
-      const search = {
-        bounds: this.map.getBounds(),
-        types: ['veterinary_care'],
-      }
-      const MARKER_PATH =
-        'https://developers.google.com/maps/documentation/javascript/images/marker_green'
-
-      this.places.nearbySearch(search, (results, status, pagination) => {
-        if (
-          status === window.google.maps.places.PlacesServiceStatus.OK &&
-          results
-        ) {
-          this.reset()
-          this.results = results
-          results.forEach((result, idx) => {
-            const markerLetter = String.fromCharCode(
-              'A'.charCodeAt(0) + (idx % 26),
-            )
-            const icon = MARKER_PATH + markerLetter + '.png'
-            const marker = new window.google.maps.Marker({
-              position: results[idx].geometry.location,
-              animation: window.google.maps.Animation.DROP,
-              icon,
-            })
-
-            this.markers.push(marker)
-            this.markers[idx].placeResult = results[idx]
-
-            window.google.maps.event.addListener(
-              this.markers[idx],
-              'click',
-              () => this.showInfoWindow(this.markers[idx]),
-            )
-            setTimeout(this.markers[idx].setMap(this.map), idx * 100)
-
-            console.log('### result: ', result)
-          })
-        }
-      })
-    },
     reset() {
-      // clear results
-      this.results = null
-      // clear markers
-      this.markers.forEach(marker => {
-        marker.setMap(null)
-        this.markers = []
-      })
-    },
-    showInfoWindow(marker) {
-      const options = {
-        placeId: marker.placeResult.place_id,
-        // fields: ['opening_hours', 'utc_offset_minutes'],
+      if (this.marker) {
+        this.marker.setMap(null)
+        this.marker = null
       }
-
-      this.places.getDetails(options, (place, status) => {
-        if (status !== 'OK') return
-        const isOpenAtTime = place.opening_hours.isOpen(
-          new Date('December 17, 2020 03:24:00'),
-        )
-        if (isOpenAtTime) {
-          // We know it's open.
-          console.log('### isOpenAtTime: ', isOpenAtTime)
-        }
-
-        const isOpenNow = place.opening_hours.isOpen()
-        if (isOpenNow) {
-          // We know it's open.
-          console.log('### isOpenNow: ', isOpenNow)
-        }
-
-        console.log('### place: ', place)
-        this.currentPlace = place
-        this.infoWindow.open({
-          anchor: marker,
-          map: this.map,
-          shouldFocus: false,
-        })
-      })
     },
-    showMaker(e) {
-      const { id } = e.target
-      console.log('### id: ', id)
-      // window.google.map.event.trigger(this.markers[id], 'click')
-      // this.infoWindow.open({
-      //   anchor: marker,
-      //   map: this.map,
-      //   shouldFocus: false,
-      // })
-
-      // this.currentPlace = place
-      // this.infoWindow.open({
-      //   anchor: marker,
-      //   map: this.map,
-      //   shouldFocus: false,
-      // })
+    showInfoWindow() {
+      this.infoWindow.open({
+        anchor: this.marker,
+        map: this.map,
+        shouldFocus: false,
+      })
     },
     setCountry() {
       if (this.selection === 'all') {

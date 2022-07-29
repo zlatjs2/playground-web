@@ -48,6 +48,8 @@
       <atoms-base-divider />
     </div>
     <section class="sns-group">
+      <button type="button" @click="signInWithKakao2">1111</button>
+
       <button
         id="naverIdLogin"
         type="button"
@@ -73,7 +75,13 @@
 
 <script>
 // import authMixin from '@/mixins/auth.js'
-import { GoogleAuthProvider } from 'firebase/auth'
+import {
+  GoogleAuthProvider,
+  OAuthProvider,
+  signInWithRedirect,
+  getAuth,
+  getRedirectResult,
+} from 'firebase/auth'
 
 export default {
   name: 'SigninPage',
@@ -149,6 +157,37 @@ export default {
     },
     signInWithEmail() {
       console.log('### 준비중:')
+    },
+    signInWithKakao2() {
+      console.log('### 1:', OAuthProvider)
+      const provider = new OAuthProvider('oidc.kakao')
+
+      provider.setCustomParameters({
+        login_hint: 'user@example.com',
+      })
+
+      console.log('### provider:', provider)
+
+      const auth = getAuth()
+      // signInWithRedirect(auth, provider)
+      console.log('### getRedirectResult:', getRedirectResult)
+
+      signInWithRedirect(auth, provider)
+        .then(result => {
+          // User is signed in.
+          // IdP data available in result.additionalUserInfo.profile.
+
+          // Get the OAuth access token and ID Token
+          const credential = OAuthProvider.credentialFromResult(result)
+          const accessToken = credential.accessToken
+          const idToken = credential.idToken
+
+          console.log('### accessToken, idToken:', accessToken, idToken)
+        })
+        .catch(error => {
+          // Handle error.
+          console.log('### error:', error)
+        })
     },
   },
 }

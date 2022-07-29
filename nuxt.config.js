@@ -1,9 +1,3 @@
-// import dotenv from 'dotenv'
-// dotenv.config()
-
-// console.log('### process.env:', process.env)
-
-// export default {
 require('dotenv').config()
 
 module.exports = {
@@ -24,16 +18,11 @@ module.exports = {
       { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
       {
         hid: 'maps-googleapis',
-        src: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAP_KEY}&libraries=places`,
+        src: `https://maps.googleapis.com/maps/api/js?v=weekly&key=${process.env.GOOGLE_MAP_KEY}&libraries=places`,
         defer: true,
-        // callback: this.googleAutocompleteInit,
       },
     ],
   },
-
-
-
-  
 
   // 프론트엔드에 노출되는 환경 변수
   publicRuntimeConfig: {
