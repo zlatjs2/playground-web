@@ -15,10 +15,11 @@ module.exports = {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     script: [
-      { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
+      // { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
+      { src: 'https://developers.kakao.com/sdk/js/kakao.min.js' },
       {
         hid: 'maps-googleapis',
-        src: `https://maps.googleapis.com/maps/api/js?v=weekly&key=${process.env.GOOGLE_MAP_KEY}&libraries=places`,
+        src: `https://maps.googleapis.com/maps/api/js?v=weekly&key=${process.env.FIREBASE_API_KEY}&libraries=places`,
         defer: true,
       },
     ],
@@ -43,7 +44,7 @@ module.exports = {
     scss: '@/assets/scss/index.scss',
   },
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: '@/plugins/axios' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

@@ -48,8 +48,6 @@
       <atoms-base-divider />
     </div>
     <section class="sns-group">
-      <button type="button" @click="signInWithKakao2">1111</button>
-
       <button
         id="naverIdLogin"
         type="button"
@@ -74,25 +72,16 @@
 </template>
 
 <script>
-// import authMixin from '@/mixins/auth.js'
-import {
-  GoogleAuthProvider,
-  OAuthProvider,
-  signInWithRedirect,
-  getAuth,
-  getRedirectResult,
-} from 'firebase/auth'
+import { GoogleAuthProvider } from 'firebase/auth'
+import authMixin from '@/middleware/auth'
 
 export default {
   name: 'SigninPage',
-  // mixins: [authMixin],
   layout: 'memberLayout',
-  async asyncData({ $axios, $cookiz, $fire, query, redirect }) {
-    console.log('### query:', query)
-
+  middleware: [authMixin],
+  async asyncData({ $axios, query }) {
     if (query.code) {
       const company = query.state ? 'naver' : 'kakao'
-      console.log('### company:', company)
 
       try {
         const response = await $axios.post(
@@ -102,18 +91,14 @@ export default {
             state: query.state,
           },
         )
-
-        console.log('### 1:', response)
-
         if (response.status === 200) {
-          const { body } = response.data
-          const infos = await $fire.auth.signInWithCustomToken(body)
-
-          $cookiz.set(`firebase:${company}`, infos.user)
-          redirect('/')
+          return {
+            company,
+            token: response.data.body,
+          }
         }
       } catch (error) {
-        console.warn('### 에러:', error)
+        console.log('### error:', error)
       }
     }
   },
@@ -124,9 +109,16 @@ export default {
       checked: false,
     }
   },
-  mounted() {
-    console.log('### this.$config:', this.$config)
-    console.log('### this.$route.query:', this.$route.query)
+  async mounted() {
+    if (this.token) {
+      try {
+        const infos = await this.$fire.auth.signInWithCustomToken(this.token)
+        console.log('### infos.data:', infos)
+        this.$cookiz.set(`firebase:${this.company}`, infos.user)
+      } catch (error) {
+        console.warn('### 에러:', error)
+      }
+    }
   },
   methods: {
     signInWithKakao() {
@@ -142,14 +134,11 @@ export default {
       window.location.href = `${baseUrl}?response_type=code&client_id=${naverClientId}&redirect_uri=${redirectUrl}&state=RAMDOM_STATE`
     },
     signInWithGoogle() {
-      const { auth } = this.$fire
       const provider = new GoogleAuthProvider()
 
-      auth
+      this.$fire.auth
         .signInWithPopup(provider)
         .then(res => {
-          console.log('### 1:', 1)
-
           this.$cookiz.set(`firebase:google`, res.user)
           this.$router.push('/')
         })
@@ -157,37 +146,6 @@ export default {
     },
     signInWithEmail() {
       console.log('### 준비중:')
-    },
-    signInWithKakao2() {
-      console.log('### 1:', OAuthProvider)
-      const provider = new OAuthProvider('oidc.kakao')
-
-      provider.setCustomParameters({
-        login_hint: 'user@example.com',
-      })
-
-      console.log('### provider:', provider)
-
-      const auth = getAuth()
-      // signInWithRedirect(auth, provider)
-      console.log('### getRedirectResult:', getRedirectResult)
-
-      signInWithRedirect(auth, provider)
-        .then(result => {
-          // User is signed in.
-          // IdP data available in result.additionalUserInfo.profile.
-
-          // Get the OAuth access token and ID Token
-          const credential = OAuthProvider.credentialFromResult(result)
-          const accessToken = credential.accessToken
-          const idToken = credential.idToken
-
-          console.log('### accessToken, idToken:', accessToken, idToken)
-        })
-        .catch(error => {
-          // Handle error.
-          console.log('### error:', error)
-        })
     },
   },
 }

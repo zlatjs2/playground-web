@@ -125,8 +125,6 @@ exports.auth = functions.https.onRequest((req, res) =>
         return createFirebaseToken(accessToken)
       })
       .then(jwtToken => {
-        console.log('### jwtToken:', jwtToken)
-
         return res.status(200).json({
           body: jwtToken,
         })

@@ -26,31 +26,32 @@
 export default {
   name: 'IndexPage',
   middleware: ['auth'],
-  // async asyncData({ $fire }) {
-  //   const cities = $fire.firestore.collection('cities')
-  //   let items = null
+  async asyncData({ $fire }) {
+    const cities = $fire.firestore.collection('cities')
+    let items = null
 
-  //   try {
-  //     const snapshot = await cities.get()
+    try {
+      const snapshot = await cities.get()
+      console.log('### snapshot:', snapshot)
 
-  //     snapshot.forEach(async doc => {
-  //       console.log('### doc.id:', doc.id)
+      snapshot.forEach(async doc => {
+        console.log('### doc.id:', doc.id)
 
-  //       items = snapshot.docs.map(doc => doc.data())
+        items = snapshot.docs.map(doc => doc.data())
 
-  //       const reviews = cities.doc(doc.id).collection('reviews')
-  //       const subSnapshot = await reviews.get()
-  //       const subItems = subSnapshot.docs.map(doc2 => doc2.data())
-  //       console.log('### subItems:', subItems)
-  //     })
-  //   } catch (error) {
-  //     console.log('### error:', error)
-  //   }
+        const reviews = cities.doc(doc.id).collection('reviews')
+        const subSnapshot = await reviews.get()
+        const subItems = subSnapshot.docs.map(doc2 => doc2.data())
+        console.log('### subItems:', subItems)
+      })
+    } catch (error) {
+      console.log('### error:', error)
+    }
 
-  //   return {
-  //     items,
-  //   }
-  // },
+    return {
+      items,
+    }
+  },
   data() {
     return {
       items: null,
@@ -168,7 +169,9 @@ export default {
       },
     }
   },
-
+  mounted() {
+    console.log('### :', this.$store.state.common.users)
+  },
   methods: {
     closeModal() {
       this.isOpen = false

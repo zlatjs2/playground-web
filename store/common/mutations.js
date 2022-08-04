@@ -5,6 +5,9 @@ export default {
   ERROR(state, payload) {
     state.isError = payload
   },
+  SNACKBAR(state, payload) {
+    state.isSnackBar = payload
+  },
   USER_INFO(state, payload) {
     state.users = payload
   },

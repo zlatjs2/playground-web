@@ -5,12 +5,18 @@
         <Nuxt />
       </article>
     </main>
+    <atoms-base-dimmed v-if="pending" />
   </div>
 </template>
 
 <script>
 export default {
   name: 'MemberLayout',
+  computed: {
+    pending() {
+      return this.$store.state.common.isPending
+    },
+  },
 }
 </script>
 

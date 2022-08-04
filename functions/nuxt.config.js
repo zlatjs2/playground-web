@@ -1,9 +1,3 @@
-// import dotenv from 'dotenv'
-// dotenv.config()
-
-// console.log('### process.env:', process.env)
-
-// export default {
 require('dotenv').config()
 
 module.exports = {
@@ -20,7 +14,15 @@ module.exports = {
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
-    script: [{ src: 'https://developers.kakao.com/sdk/js/kakao.js' }],
+    script: [
+      // { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
+      { src: 'https://developers.kakao.com/sdk/js/kakao.min.js' },
+      {
+        hid: 'maps-googleapis',
+        src: `https://maps.googleapis.com/maps/api/js?v=weekly&key=${process.env.FIREBASE_API_KEY}&libraries=places`,
+        defer: true,
+      },
+    ],
   },
 
   // 프론트엔드에 노출되는 환경 변수
@@ -42,7 +44,7 @@ module.exports = {
     scss: '@/assets/scss/index.scss',
   },
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: '@/plugins/axios' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -73,7 +75,24 @@ module.exports = {
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
     services: {
-      auth: true,
+      // auth: {
+      //   strategies: {
+      //     oidc: {
+      //       scheme: 'openIDConnect',
+      //       clientId: process.env.KAKAO_REST_API_KEY,
+      //       endpoints: {
+      //         configuration:
+      //           'https://kauth.kakao.com/.well-known/openid-configuration',
+      //       },
+      //     },
+      //   },
+      // },
+      auth: {
+        ssr: {
+          credential:
+            './vangvang-log-dev-firebase-adminsdk-af2lq-35cde54295.json',
+        },
+      },
       firestore: true,
       functions: true,
       storage: true,
