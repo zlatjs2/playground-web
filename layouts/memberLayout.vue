@@ -5,6 +5,7 @@
         <Nuxt />
       </article>
     </main>
+
     <atoms-base-dimmed v-if="pending" />
   </div>
 </template>

@@ -1,18 +1,21 @@
 /**
- * 사용자 인증 미들웨어
+ * 인증 미들웨어
  */
-export default ({ $cookiz, store, redirect }) => {
-  console.log('### 미들웨어:')
-
-  const authCookies =
+export default ({ store, redirect, $cookiz }) => {
+  const { userInfo } = store.state
+  const infos =
     $cookiz.get('firebase:kakao') ||
     $cookiz.get('firebase:naver') ||
     $cookiz.get('firebase:google')
 
-  if (authCookies) {
-    const { users } = store.state.common
-    if (!users) store.dispatch('common/SET_USER_INFO', authCookies)
-  } else {
-    redirect('/signin')
+  if (!userInfo) {
+    if (infos) {
+      store.dispatch('FETCH_USER', infos)
+      redirect('/')
+    } else {
+      console.log('### 111:', 111)
+
+      redirect('/signin')
+    }
   }
 }

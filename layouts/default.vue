@@ -120,12 +120,54 @@
         </atoms-base-typorgraphy>
       </template>
     </molecules-app-drawer>
+    <atoms-base-dimmed v-if="isPending" />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'DefaultLayout',
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo,
+      isPending: state => state.common.isPending,
+    }),
+  },
+  watch: {
+    userInfo(state) {
+      if (!state) {
+        this.$router.push('/signin')
+      }
+    },
+  },
+  methods: {
+    onDrawer() {
+      this.isDrawer = !this.isDrawer
+    },
+    signOut() {
+      const { kakaoRestApiKey, redirectUrl } = this.$config
+      const { uid } = this.userInfo
+      const providerId = uid.includes('kakao')
+        ? 'kakao'
+        : uid.includes('naver')
+        ? 'naver'
+        : 'google'
+
+      if (providerId === 'kakao') {
+        const baseUrl = 'https://kauth.kakao.com/oauth/logout'
+        window.location.href = `${baseUrl}?client_id=${kakaoRestApiKey}&logout_redirect_uri=${redirectUrl}`
+      } else if (providerId === 'google') {
+        this.$fire.auth.signOut()
+      }
+      console.log('### providerId:', providerId)
+
+      this.$cookiz.remove(`firebase:${providerId}`)
+      this.$store.dispatch('FETCH_USER', null)
+      this.$store.dispatch('SET_TOKEN', null)
+    },
+  },
   data() {
     return {
       isDrawer: false,
@@ -162,38 +204,6 @@ export default {
         },
       ],
     }
-  },
-  mounted() {
-    console.log('### this.$route:', this.$route)
-  },
-  methods: {
-    onDrawer() {
-      this.isDrawer = !this.isDrawer
-    },
-    signOut() {
-      const { kakaoRestApiKey, redirectUrl } = this.$config
-      const { users } = this.$store.state.common
-      const company = users.uid.split(':')[0]
-
-      if (company === 'kakao') {
-        const baseUrl = 'https://kauth.kakao.com/oauth/logout'
-        window.location.href = `${baseUrl}?client_id=${kakaoRestApiKey}&logout_redirect_uri=${redirectUrl}`
-      } else if (company === 'naver') {
-        this.$store.dispatch('common/USER_INFO')
-        this.$router.push('/signin')
-      } else {
-        this.$fire.auth
-          .signOut()
-          .then(() => {
-            this.$router.push('/signin')
-            this.$cookiz.remove(`firebase:google`)
-            return false
-          })
-          .catch(err => console.log('### err: ', err))
-      }
-
-      this.$cookiz.remove(`firebase:${company}`)
-    },
   },
 }
 </script>

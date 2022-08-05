@@ -3,4 +3,5 @@ export default () => ({
   isError: false,
   isSnackBar: false,
   users: null,
+  token: null,
 })

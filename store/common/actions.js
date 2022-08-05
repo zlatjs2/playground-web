@@ -8,8 +8,4 @@ export default {
   SET_SNACKBAR({ commit }, payload) {
     commit('SNACKBAR', payload)
   },
-  SET_USER_INFO({ commit }, payload) {
-    commit('USER_INFO', payload)
-  },
-  onAuthStateChangedAction({ commit }, { authUser, claims }) {},
 }

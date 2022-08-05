@@ -75,24 +75,7 @@ module.exports = {
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
     services: {
-      // auth: {
-      //   strategies: {
-      //     oidc: {
-      //       scheme: 'openIDConnect',
-      //       clientId: process.env.KAKAO_REST_API_KEY,
-      //       endpoints: {
-      //         configuration:
-      //           'https://kauth.kakao.com/.well-known/openid-configuration',
-      //       },
-      //     },
-      //   },
-      // },
-      auth: {
-        ssr: {
-          credential:
-            './vangvang-log-dev-firebase-adminsdk-af2lq-35cde54295.json',
-        },
-      },
+      auth: true,
       firestore: true,
       functions: true,
       storage: true,

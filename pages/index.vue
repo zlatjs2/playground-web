@@ -12,7 +12,7 @@
       </div>
     </div>
     <div v-else>아이템이 없습니다</div>
-
+    {{ userInfo }}
     <!-- <molecules-data-table
       :columns="columns"
       :rows="rows"
@@ -23,35 +23,40 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'IndexPage',
   middleware: ['auth'],
-  async asyncData({ $fire }) {
-    const cities = $fire.firestore.collection('cities')
-    let items = null
-
-    try {
-      const snapshot = await cities.get()
-      console.log('### snapshot:', snapshot)
-
-      snapshot.forEach(async doc => {
-        console.log('### doc.id:', doc.id)
-
-        items = snapshot.docs.map(doc => doc.data())
-
-        const reviews = cities.doc(doc.id).collection('reviews')
-        const subSnapshot = await reviews.get()
-        const subItems = subSnapshot.docs.map(doc2 => doc2.data())
-        console.log('### subItems:', subItems)
-      })
-    } catch (error) {
-      console.log('### error:', error)
-    }
-
-    return {
-      items,
-    }
+  computed: {
+    ...mapState(['userInfo']),
   },
+  // async asyncData({ $fire }) {
+  //   const cities = $fire.firestore.collection('cities')
+  //   let items = null
+
+  //   try {
+  //     const snapshot = await cities.get()
+  //     console.log('### snapshot:', snapshot)
+
+  //     snapshot.forEach(async doc => {
+  //       console.log('### doc.id:', doc.id)
+
+  //       items = snapshot.docs.map(doc => doc.data())
+
+  //       const reviews = cities.doc(doc.id).collection('reviews')
+  //       const subSnapshot = await reviews.get()
+  //       const subItems = subSnapshot.docs.map(doc2 => doc2.data())
+  //       console.log('### subItems:', subItems)
+  //     })
+  //   } catch (error) {
+  //     console.log('### error:', error)
+  //   }
+
+  //   return {
+  //     items,
+  //   }
+  // },
   data() {
     return {
       items: null,
@@ -170,7 +175,7 @@ export default {
     }
   },
   mounted() {
-    console.log('### :', this.$store.state.common.users)
+    console.log('### :', this.userInfo)
   },
   methods: {
     closeModal() {

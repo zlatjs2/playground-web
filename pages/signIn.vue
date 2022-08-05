@@ -72,14 +72,21 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { GoogleAuthProvider } from 'firebase/auth'
-import authMixin from '@/middleware/auth'
 
 export default {
   name: 'SigninPage',
   layout: 'memberLayout',
-  middleware: [authMixin],
-  async asyncData({ $axios, query }) {
+  middleware({ store, redirect }) {
+    const { userInfo } = store.state
+    console.log('### 로그인 컴포넌트:', userInfo)
+
+    if (userInfo) {
+      redirect('/')
+    }
+  },
+  async asyncData({ $axios, store, query }) {
     if (query.code) {
       const company = query.state ? 'naver' : 'kakao'
 
@@ -92,9 +99,10 @@ export default {
           },
         )
         if (response.status === 200) {
+          store.dispatch('SET_TOKEN', response.data.body)
           return {
             company,
-            token: response.data.body,
+            // token: response.data.body,
           }
         }
       } catch (error) {
@@ -110,15 +118,21 @@ export default {
     }
   },
   async mounted() {
+    console.log('### this.token:', this.token)
+
     if (this.token) {
       try {
         const infos = await this.$fire.auth.signInWithCustomToken(this.token)
         console.log('### infos.data:', infos)
         this.$cookiz.set(`firebase:${this.company}`, infos.user)
+        this.$router.push('/')
       } catch (error) {
         console.warn('### 에러:', error)
       }
     }
+  },
+  computed: {
+    ...mapState(['token']),
   },
   methods: {
     signInWithKakao() {
@@ -133,16 +147,16 @@ export default {
 
       window.location.href = `${baseUrl}?response_type=code&client_id=${naverClientId}&redirect_uri=${redirectUrl}&state=RAMDOM_STATE`
     },
-    signInWithGoogle() {
+    async signInWithGoogle() {
       const provider = new GoogleAuthProvider()
 
-      this.$fire.auth
-        .signInWithPopup(provider)
-        .then(res => {
-          this.$cookiz.set(`firebase:google`, res.user)
-          this.$router.push('/')
-        })
-        .catch(err => console.log('### err:', err))
+      try {
+        const infos = await this.$fire.auth.signInWithPopup(provider)
+        this.$cookiz.set(`firebase:google`, infos.user)
+        this.$router.push('/')
+      } catch (error) {
+        console.log('### error:', error)
+      }
     },
     signInWithEmail() {
       console.log('### 준비중:')
