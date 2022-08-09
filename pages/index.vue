@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="items && items.length > 0">
+    <!-- <div v-if="items && items.length > 0">
       <h3>아이템 리스트</h3>
       <div v-for="(item, idx) in items" :key="idx">
         {{ item.name }}
@@ -11,8 +11,23 @@
         1123123
       </div>
     </div>
-    <div v-else>아이템이 없습니다</div>
-    {{ userInfo }}
+    <div v-else>아이템이 없습니다</div> -->
+
+    <button type="button" @click="getSheets">버어어어튼</button>
+    <!-- {{ userInfo }} -->
+
+    <table v-if="sheets">
+      <tr v-for="(sheet, idx) in sheets" :key="idx">
+        <td v-for="(item, sidx) in sheet" :key="sidx">
+          {{ item }}
+          <img
+            v-if="idx > 0 && sidx === 1"
+            src="http://drive.google.com/uc?export=view&id=1Yf24uUKQO9kQ43UOCokULGAE_ZfZUpFD"
+            alt=""
+          />
+        </td>
+      </tr>
+    </table>
     <!-- <molecules-data-table
       :columns="columns"
       :rows="rows"
@@ -24,6 +39,7 @@
 
 <script>
 import { mapState } from 'vuex'
+// import { client_email, private_key } from '@/credentials.json'
 
 export default {
   name: 'IndexPage',
@@ -31,6 +47,14 @@ export default {
   computed: {
     ...mapState(['userInfo']),
   },
+  asyncData() {
+    // const response = await $axios.get(
+    //   'https://docs.google.com/spreadsheets/d/1tfNMFApi3Y_qNvwAJGnEao53pfvJjL3_ug_mqIz7KXo/gviz/tq?tq=SELECT+A%2cB%2cC',
+    // )
+    // console.log('### 1:', response)
+    // console.log('### :', client_email, private_key)
+  },
+
   // async asyncData({ $fire }) {
   //   const cities = $fire.firestore.collection('cities')
   //   let items = null
@@ -57,6 +81,9 @@ export default {
   //     items,
   //   }
   // },
+  mounted() {
+    console.log('### :', this.$Google)
+  },
   data() {
     return {
       items: null,
@@ -172,12 +199,20 @@ export default {
         people: {},
         reviews: {},
       },
+      sheets: null,
     }
   },
-  mounted() {
-    console.log('### :', this.userInfo)
-  },
   methods: {
+    async getSheets() {
+      const response = await this.$axios.get(
+        'http://localhost:5001/vangvang-log-dev/us-central1/google-sheets',
+      )
+      if (response.status === 200) {
+        console.log('### response.data:', response.data)
+
+        this.sheets = response.data
+      }
+    },
     closeModal() {
       this.isOpen = false
     },
@@ -192,7 +227,12 @@ export default {
 </script>
 
 <style lang="scss">
-body {
-  color: $common-black;
+table {
+  td {
+    border: 1px solid #000;
+  }
+  tr:first-child {
+    background-color: #ddd;
+  }
 }
 </style>

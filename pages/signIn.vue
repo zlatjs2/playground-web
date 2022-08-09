@@ -124,7 +124,7 @@ export default {
       try {
         const infos = await this.$fire.auth.signInWithCustomToken(this.token)
         console.log('### infos.data:', infos)
-        this.$cookiz.set(`firebase:${this.company}`, infos.user)
+        this.$cookiz.set(`__session`, infos.user)
         this.$router.push('/')
       } catch (error) {
         console.warn('### 에러:', error)

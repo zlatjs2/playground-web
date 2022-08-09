@@ -3,10 +3,7 @@
  */
 export default ({ store, redirect, $cookiz }) => {
   const { userInfo } = store.state
-  const infos =
-    $cookiz.get('firebase:kakao') ||
-    $cookiz.get('firebase:naver') ||
-    $cookiz.get('firebase:google')
+  const infos = $cookiz.get('__session')
 
   if (!userInfo) {
     if (infos) {

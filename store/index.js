@@ -16,11 +16,8 @@ export const mutations = {
 }
 
 export const actions = {
-  nuxtServerInit({ commit }, { $cookiz, req }) {
-    const infos =
-      $cookiz.get('firebase:kakao') ||
-      $cookiz.get('firebase:naver') ||
-      $cookiz.get('firebase:google')
+  nuxtServerInit({ commit }, { $cookiz }) {
+    const infos = $cookiz.get('__session')
     console.log('### nuxtServerInit:', infos)
 
     commit('SET_USER', infos)

@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 module.exports = {
+  target: 'server',
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'playground-web',
@@ -15,7 +16,6 @@ module.exports = {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     script: [
-      // { src: 'https://developers.kakao.com/sdk/js/kakao.js' },
       { src: 'https://developers.kakao.com/sdk/js/kakao.min.js' },
       {
         hid: 'maps-googleapis',
@@ -61,6 +61,7 @@ module.exports = {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/firebase',
+
     ['cookie-universal-nuxt', { alias: 'cookiz' }],
   ],
 

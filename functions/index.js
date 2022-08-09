@@ -25,10 +25,12 @@ const nuxt = new Nuxt(config)
 // 공통 기능별 함수 가져오기
 const kakao = require('./kakao.js')
 const naver = require('./naver.js')
+const google = require('./google.js')
 
 module.exports = {
   kakao,
   naver,
+  google,
   ssrapp: functions.https.onRequest(async (req, res) => {
     await nuxt.ready()
     nuxt.render(req, res)

@@ -163,7 +163,7 @@ export default {
       }
       console.log('### providerId:', providerId)
 
-      this.$cookiz.remove(`firebase:${providerId}`)
+      this.$cookiz.remove('__session')
       this.$store.dispatch('FETCH_USER', null)
       this.$store.dispatch('SET_TOKEN', null)
     },
